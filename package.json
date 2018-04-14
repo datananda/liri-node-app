@@ -18,8 +18,12 @@
   },
   "homepage": "https://github.com/madeloux/liri-node-app#readme",
   "dependencies": {
+    "dotenv": "^5.0.1",
     "eslint": "^4.19.1",
     "eslint-config-airbnb-base": "^12.1.0",
-    "eslint-plugin-import": "^2.11.0"
+    "eslint-plugin-import": "^2.11.0",
+    "node-spotify-api": "^1.0.7",
+    "request": "^2.85.0",
+    "twitter": "^1.7.1"
   }
 }

@@ -4,30 +4,54 @@ const Spotify = require("node-spotify-api");
 const Twitter = require("twitter");
 const request = require("request");
 const fs = require("fs");
+const chalk = require("chalk");
+const term = require("terminal-kit").terminal;
 const keys = require("./keys.js");
 
 // GLOBAL VARIABLES
 let command = process.argv[2];
 let parameter = process.argv[3];
 
-// COMMANDS
-// * `movie-this`
-// * Title of the movie.
-// * Year the movie came out.
-// * IMDB Rating of the movie.
-// * Rotten Tomatoes Rating of the movie.
-// * Country where the movie was produced.
-// * Language of the movie.
-// * Plot of the movie.
-// * Actors in the movie.
-// default:
-// If you haven't watched "Mr. Nobody," then you should: http://www.imdb.com/title/tt0485947/
-// It's on Netflix!
-
-
-// * `do-what-it-says`
-
 // FUNCTIONS
+function getWidth(maxTextWidth) {
+    if (maxTextWidth < term.width) {
+        return maxTextWidth;
+    }
+    return term.width;
+}
+
+function printHeader(headerText, width) {
+    let spacer = "+";
+    for (let i = 2; i < width; i++) {
+        spacer += "-";
+    }
+    spacer += "+";
+    let header = `| ${headerText}`;
+    for (let i = header.length + 1; i < width; i++) {
+        header += " ";
+    }
+    header += "|";
+    console.log(chalk.bgBlue(spacer));
+    console.log(chalk.bgBlue(header));
+    console.log(chalk.bgBlue(spacer));
+}
+
+// function printObject(obj, width) {
+//     let spacer = "+";
+//     for (let i = 2; i < width; i++) {
+//         spacer += "-";
+//     }
+//     spacer += "+";
+//     let header = `| ${headerText}`;
+//     for (let i = header.length + 1; i < width; i++) {
+//         header += " ";
+//     }
+//     header += "|";
+//     console.log(chalk.bgBlue(spacer));
+//     console.log(chalk.bgBlue(header));
+//     console.log(chalk.bgBlue(spacer));
+// }
+
 function myTweets() {
     const twitter = new Twitter(keys.twitter);
     const twitterParams = {
@@ -37,7 +61,6 @@ function myTweets() {
     };
     twitter.get("statuses/user_timeline", twitterParams, (error, tweets, response) => {
         if (!error && response.statusCode === 200) {
-            // console.log(tweets);
             tweets.forEach((tweet, i) => {
                 console.log("----------------------------------------------");
                 console.log(`Tweet ${i + 1}`);
@@ -65,21 +88,21 @@ function spotifySong() {
         if (!error) {
             const trackInfo = data.tracks.items[0];
             const artistList = trackInfo.artists;
-            console.log("----------------------------------------------");
-            console.log(`Song Name: ${trackInfo.name}`);
+            console.log("+---------------------------------------------");
+            console.log(`| Song Name: ${trackInfo.name}`);
             if (artistList.length > 1) {
                 let artists = "";
                 artistList.forEach((artistObj) => {
                     artists += `${artistObj.name}, `;
                 });
                 artists = artists.slice(0, -2);
-                console.log(`Artists: ${artists}`);
+                console.log(`| Artists: ${artists}`);
             } else {
-                console.log(`Artist: ${artistList[0].name}`);
+                console.log(`| Artist: ${artistList[0].name}`);
             }
-            console.log(`Preview Link: ${trackInfo.preview_url}`);
-            console.log(`Album: ${trackInfo.album.name}`);
-            console.log("----------------------------------------------");
+            console.log(`| Preview Link: ${trackInfo.preview_url}`);
+            console.log(`| Album: ${trackInfo.album.name}`);
+            console.log("+---------------------------------------------");
         } else {
             console.log(`Error occurred: ${error}`);
         }
@@ -109,7 +132,7 @@ function movieThis() {
         });
     } else {
         console.log("----------------------------------------------");
-        console.log(`If you haven't watched "Mr. Nobody," then you should: http://www.imdb.com/title/tt0485947/`);
+        console.log('If you haven\'t watched "Mr. Nobody," then you should: http://www.imdb.com/title/tt0485947/');
         console.log("It's on Netflix!");
         console.log("----------------------------------------------");
     }
@@ -148,5 +171,6 @@ if (parameter) {
 if (command === "do-what-it-says") {
     doWhatItSays();
 } else {
+    printHeader("My Tweets", getWidth(50));
     processCommand();
 }

@@ -21,36 +21,45 @@ function getWidth(maxTextWidth) {
 }
 
 function printHeader(headerText, width) {
-    let spacer = "+";
+    let spacer = "";
+    let header = headerText;
     for (let i = 2; i < width; i++) {
         spacer += "-";
     }
-    spacer += "+";
-    let header = `| ${headerText}`;
-    for (let i = header.length + 1; i < width; i++) {
+    for (let i = header.length + 3; i < width; i++) {
         header += " ";
     }
-    header += "|";
-    console.log(chalk.bgBlue(spacer));
-    console.log(chalk.bgBlue(header));
-    console.log(chalk.bgBlue(spacer));
+    console.log(chalk.blue(`+${spacer}+`));
+    console.log(chalk.blue(`| ${header}|`));
+    console.log(chalk.blue(`+${spacer}+`));
 }
 
-// function printObject(obj, width) {
-//     let spacer = "+";
-//     for (let i = 2; i < width; i++) {
-//         spacer += "-";
-//     }
-//     spacer += "+";
-//     let header = `| ${headerText}`;
-//     for (let i = header.length + 1; i < width; i++) {
-//         header += " ";
-//     }
-//     header += "|";
-//     console.log(chalk.bgBlue(spacer));
-//     console.log(chalk.bgBlue(header));
-//     console.log(chalk.bgBlue(spacer));
-// }
+function printObject(obj, width) {
+    Object.keys(obj).forEach((section) => {
+        let sectionSpacer = "";
+        let spacer = "";
+        let text = obj[section];
+        for (let i = 0; i < section.length; i++) {
+            spacer += " ";
+        }
+        for (let i = section.length + 3; i < width; i++) {
+            sectionSpacer += " ";
+            spacer += " ";
+        }
+        for (let i = text.length + 3; i < width; i++) {
+            text += " ";
+        }
+        console.log(`| ${spacer}|`);
+        console.log(`| ${chalk.blue(section)}${sectionSpacer}|`);
+        console.log(`| ${text}|`);
+        console.log(`| ${spacer}|`);
+    });
+    let closer = "";
+    for (let i = 2; i < width; i++) {
+        closer += "-";
+    }
+    console.log(`+${closer}+`);
+}
 
 function myTweets() {
     const twitter = new Twitter(keys.twitter);
@@ -172,5 +181,6 @@ if (command === "do-what-it-says") {
     doWhatItSays();
 } else {
     printHeader("My Tweets", getWidth(50));
+    printObject({ Artist: "ACDC", "Track Name": "You shook me" }, getWidth(50));
     processCommand();
 }

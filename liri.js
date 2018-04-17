@@ -13,9 +13,25 @@ let command = process.argv[2];
 let parameter = process.argv[3];
 
 // FUNCTIONS
-function getWidth(maxTextWidth) {
-    if (maxTextWidth < term.width) {
-        return maxTextWidth;
+function getMaxLength(obj) {
+    if (typeof obj === "object") {
+        let length = 0;
+        console.log(typeof obj);
+        Object.keys(obj).forEach((key) => {
+            if (key.length > length) {
+                length = key.length;
+            }
+            if (obj[key].length > length) {
+                length = obj[key].length;
+            }
+        });
+        if (length < term.width) {
+            return length;
+        }
+        return term.width;
+    }
+    if (obj < term.width) {
+        return obj;
     }
     return term.width;
 }
@@ -23,16 +39,16 @@ function getWidth(maxTextWidth) {
 function printHeader(headerText, width, color) {
     let spacer = "";
     let header = headerText;
-    for (let i = 2; i < width; i++) {
+    for (let i = 0; i < width; i++) {
         spacer += "-";
     }
-    for (let i = header.length + 3; i < width; i++) {
+    for (let i = header.length; i < width; i++) {
         header += " ";
     }
     console.log("");
-    console.log(chalk[color](`+${spacer}+`));
-    console.log(chalk[color](`| ${header}|`));
-    console.log(chalk[color](`+${spacer}+`));
+    console.log(chalk[color](`+-${spacer}-+`));
+    console.log(chalk[color](`| ${header} |`));
+    console.log(chalk[color](`+-${spacer}-+`));
 }
 
 function printObject(obj, width, color) {
@@ -43,23 +59,23 @@ function printObject(obj, width, color) {
         for (let i = 0; i < section.length; i++) {
             spacer += " ";
         }
-        for (let i = section.length + 3; i < width; i++) {
+        for (let i = section.length; i < width; i++) {
             sectionSpacer += " ";
             spacer += " ";
         }
-        for (let i = text.length + 3; i < width; i++) {
+        for (let i = text.length; i < width; i++) {
             text += " ";
         }
-        console.log(`| ${spacer}|`);
-        console.log(`| ${chalk[color](section)}${sectionSpacer}|`);
-        console.log(`| ${text}|`);
-        console.log(`| ${spacer}|`);
+        console.log(`| ${spacer} |`);
+        console.log(`| ${chalk[color](section)}${sectionSpacer} |`);
+        console.log(`| ${text} |`);
+        console.log(`| ${spacer} |`);
     });
     let closer = "";
-    for (let i = 2; i < width; i++) {
+    for (let i = 0; i < width; i++) {
         closer += "-";
     }
-    console.log(`+${closer}+`);
+    console.log(`+-${closer}-+`);
 }
 
 function myTweets() {
@@ -71,14 +87,14 @@ function myTweets() {
     };
     twitter.get("statuses/user_timeline", twitterParams, (error, tweets, response) => {
         if (!error && response.statusCode === 200) {
-            printHeader("My Tweets", getWidth(50), "blue");
+            printHeader("My Tweets", getMaxLength(140), "blue");
             tweets.forEach((tweet, i) => {
                 const tweetObj = {
                     "Tweet Number": String(i + 1),
                     "Tweet Text": tweet.text,
                     "Created At": tweet.created_at, // TODO: format time better. this is UTC time.
                 };
-                printObject(tweetObj, getWidth(50), "blue");
+                printObject(tweetObj, getMaxLength(140), "blue");
             });
             console.log("");
         } else {
@@ -118,8 +134,9 @@ function spotifySong() {
                 spotifyObj["Preview Link"] = trackInfo.preview_url;
             }
             spotifyObj.Album = trackInfo.album.name;
-            printHeader("Spotify This Song", getWidth(75), "green");
-            printObject(spotifyObj, getWidth(75), "green");
+            console.log(getMaxLength(spotifyObj));
+            printHeader("Spotify This Song", getMaxLength(spotifyObj), "green");
+            printObject(spotifyObj, getMaxLength(spotifyObj), "green");
             console.log("");
         } else {
             console.log(`Error occurred: ${error}`);
@@ -144,8 +161,8 @@ function movieThis() {
                     Plot: movieInfo.Plot,
                     Actors: movieInfo.Actors,
                 };
-                printHeader("Movie This", getWidth(75), "yellow");
-                printObject(movieObj, getWidth(75), "yellow");
+                printHeader("Movie This", getMaxLength(movieObj), "yellow");
+                printObject(movieObj, getMaxLength(movieObj), "yellow");
                 console.log("");
             } else {
                 console.log(`Error occurred: ${error}`);
@@ -155,8 +172,8 @@ function movieThis() {
         const movieRec = {
             "Movie Recommendation": 'If you haven\'t watched "Mr. Nobody," then you should: http://www.imdb.com/title/tt0485947/\nIt\'s on Netflix',
         };
-        printHeader("Movie This", getWidth(75), "yellow");
-        printObject(movieRec, getWidth(75), "yellow");
+        printHeader("Movie This", getMaxLength(movieRec), "yellow");
+        printObject(movieRec, getMaxLength(movieRec), "yellow");
         console.log("");
     }
 }

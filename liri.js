@@ -20,7 +20,7 @@ function getWidth(maxTextWidth) {
     return term.width;
 }
 
-function printHeader(headerText, width) {
+function printHeader(headerText, width, color) {
     let spacer = "";
     let header = headerText;
     for (let i = 2; i < width; i++) {
@@ -29,12 +29,13 @@ function printHeader(headerText, width) {
     for (let i = header.length + 3; i < width; i++) {
         header += " ";
     }
-    console.log(chalk.blue(`+${spacer}+`));
-    console.log(chalk.blue(`| ${header}|`));
-    console.log(chalk.blue(`+${spacer}+`));
+    console.log("");
+    console.log(chalk[color](`+${spacer}+`));
+    console.log(chalk[color](`| ${header}|`));
+    console.log(chalk[color](`+${spacer}+`));
 }
 
-function printObject(obj, width) {
+function printObject(obj, width, color) {
     Object.keys(obj).forEach((section) => {
         let sectionSpacer = "";
         let spacer = "";
@@ -50,7 +51,7 @@ function printObject(obj, width) {
             text += " ";
         }
         console.log(`| ${spacer}|`);
-        console.log(`| ${chalk.blue(section)}${sectionSpacer}|`);
+        console.log(`| ${chalk[color](section)}${sectionSpacer}|`);
         console.log(`| ${text}|`);
         console.log(`| ${spacer}|`);
     });
@@ -70,13 +71,16 @@ function myTweets() {
     };
     twitter.get("statuses/user_timeline", twitterParams, (error, tweets, response) => {
         if (!error && response.statusCode === 200) {
+            printHeader("My Tweets", getWidth(50), "blue");
             tweets.forEach((tweet, i) => {
-                console.log("----------------------------------------------");
-                console.log(`Tweet ${i + 1}`);
-                console.log(`"${tweet.text}"`);
-                console.log(`Created at: ${tweet.created_at}`); // TODO: format time better. this is UTC time.
+                const tweetObj = {
+                    "Tweet Number": String(i + 1),
+                    "Tweet Text": tweet.text,
+                    "Created At": tweet.created_at, // TODO: format time better. this is UTC time.
+                };
+                printObject(tweetObj, getWidth(50), "blue");
             });
-            console.log("----------------------------------------------");
+            console.log("");
         } else {
             console.log(`Error occurred: ${error}`);
         }
@@ -97,21 +101,26 @@ function spotifySong() {
         if (!error) {
             const trackInfo = data.tracks.items[0];
             const artistList = trackInfo.artists;
-            console.log("+---------------------------------------------");
-            console.log(`| Song Name: ${trackInfo.name}`);
+            const spotifyObj = {
+                "Song Name": trackInfo.name,
+            };
             if (artistList.length > 1) {
                 let artists = "";
                 artistList.forEach((artistObj) => {
                     artists += `${artistObj.name}, `;
                 });
                 artists = artists.slice(0, -2);
-                console.log(`| Artists: ${artists}`);
+                spotifyObj.Artists = artists;
             } else {
-                console.log(`| Artist: ${artistList[0].name}`);
+                spotifyObj.Artist = artistList[0].name;
             }
-            console.log(`| Preview Link: ${trackInfo.preview_url}`);
-            console.log(`| Album: ${trackInfo.album.name}`);
-            console.log("+---------------------------------------------");
+            if (trackInfo.preview_url) {
+                spotifyObj["Preview Link"] = trackInfo.preview_url;
+            }
+            spotifyObj.Album = trackInfo.album.name;
+            printHeader("Spotify This Song", getWidth(75), "green");
+            printObject(spotifyObj, getWidth(75), "green");
+            console.log("");
         } else {
             console.log(`Error occurred: ${error}`);
         }
@@ -125,25 +134,30 @@ function movieThis() {
             if (!error && response.statusCode === 200) {
                 const movieInfo = JSON.parse(body);
                 const rottenTomatoesObj = movieInfo.Ratings.find(rating => rating.Source === "Rotten Tomatoes");
-                console.log("----------------------------------------------");
-                console.log(`Title: ${movieInfo.Title}`);
-                console.log(`Year: ${movieInfo.Year}`);
-                console.log(`IMDB Rating: ${movieInfo.imdbRating}`);
-                console.log(`Rotten Tomatoes Rating: ${rottenTomatoesObj.Value}`);
-                console.log(`Country: ${movieInfo.Country}`);
-                console.log(`Language: ${movieInfo.Language}`);
-                console.log(`Plot: ${movieInfo.Plot}`);
-                console.log(`Actors: ${movieInfo.Actors}`);
-                console.log("----------------------------------------------");
+                const movieObj = {
+                    Title: movieInfo.Title,
+                    Year: movieInfo.Year,
+                    "IMDB Rating": movieInfo.imdbRating,
+                    "Rotten Tomatoes Rating": rottenTomatoesObj.Value,
+                    Country: movieInfo.Country,
+                    Language: movieInfo.Language,
+                    Plot: movieInfo.Plot,
+                    Actors: movieInfo.Actors,
+                };
+                printHeader("Movie This", getWidth(75), "yellow");
+                printObject(movieObj, getWidth(75), "yellow");
+                console.log("");
             } else {
                 console.log(`Error occurred: ${error}`);
             }
         });
     } else {
-        console.log("----------------------------------------------");
-        console.log('If you haven\'t watched "Mr. Nobody," then you should: http://www.imdb.com/title/tt0485947/');
-        console.log("It's on Netflix!");
-        console.log("----------------------------------------------");
+        const movieRec = {
+            "Movie Recommendation": 'If you haven\'t watched "Mr. Nobody," then you should: http://www.imdb.com/title/tt0485947/\nIt\'s on Netflix',
+        };
+        printHeader("Movie This", getWidth(75), "yellow");
+        printObject(movieRec, getWidth(75), "yellow");
+        console.log("");
     }
 }
 
@@ -180,7 +194,5 @@ if (parameter) {
 if (command === "do-what-it-says") {
     doWhatItSays();
 } else {
-    printHeader("My Tweets", getWidth(50));
-    printObject({ Artist: "ACDC", "Track Name": "You shook me" }, getWidth(50));
     processCommand();
 }

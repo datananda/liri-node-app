@@ -7,6 +7,7 @@ const fs = require("fs");
 const chalk = require("chalk");
 const term = require("terminal-kit").terminal;
 const inquirer = require("inquirer");
+const moment = require("moment");
 const keys = require("./keys.js");
 
 // FUNCTIONS
@@ -47,7 +48,8 @@ function printHeader(headerText, width, color) {
     console.log(chalk[color](`+-${spacer}-+`));
 }
 
-function printObject(obj, width, color) {
+// TODO: FIGURE OUT HOW TO WRAP TEXT IF IT OVERFLOWS WINDOW
+function printObject(obj, width, color) { 
     Object.keys(obj).forEach((section) => {
         let sectionSpacer = "";
         let spacer = "";
@@ -85,10 +87,11 @@ function myTweets() {
         if (!error && response.statusCode === 200) {
             printHeader("My Tweets", getMaxLength(140), "blue");
             tweets.forEach((tweet, i) => {
+                const formattedTime = moment.utc(tweet.created_at, "ddd MMM D HH:mm:ss Z YYYY").local().format("dddd, MMMM Do YYYY [at] h:mm a");
                 const tweetObj = {
                     "Tweet Number": String(i + 1),
                     "Tweet Text": tweet.text,
-                    "Created At": tweet.created_at, // TODO: format time better. this is UTC time.
+                    "Created At": formattedTime,
                 };
                 printObject(tweetObj, getMaxLength(140), "blue");
             });
@@ -206,15 +209,14 @@ inquirer.prompt([
         type: "list",
         name: "selection",
         message: "What do you want to do?",
-        choices: ["Show My Tweets", "Spotify Search", "Movie Search", "Do What It Says"],
+        choices: ["My Tweets", "Spotify This Song", "Movie This", "Do What It Says"],
     },
 ]).then((response) => {
-    console.log(response);
     if (response.selection === "Do What It Says") {
         doWhatItSays();
-    } else if (response.selection === "Show My Tweets") {
+    } else if (response.selection === "My Tweets") {
         myTweets();
-    } else if (response.selection === "Spotify Search") {
+    } else if (response.selection === "Spotify This Song") {
         inquirer.prompt([
             {
                 type: "input",
@@ -224,7 +226,7 @@ inquirer.prompt([
         ]).then((songResponse) => {
             spotifySong(songResponse.song);
         });
-    } else if (response.selection === "Movie Search") {
+    } else if (response.selection === "Movie This") {
         inquirer.prompt([
             {
                 type: "input",

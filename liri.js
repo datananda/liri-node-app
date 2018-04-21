@@ -34,45 +34,20 @@ function getMaxLength(obj) {
 }
 
 function printHeader(headerText, width, color) {
-    let spacer = "";
-    let header = headerText;
-    for (let i = 0; i < width; i++) {
-        spacer += "-";
-    }
-    for (let i = header.length; i < width; i++) {
-        header += " ";
-    }
-    console.log("");
-    console.log(chalk[color](`+-${spacer}-+`));
-    console.log(chalk[color](`| ${header} |`));
-    console.log(chalk[color](`+-${spacer}-+`));
+    const spacer = "-".repeat(width);
+    const header = `${headerText}${" ".repeat(width - headerText.length)}`;
+    console.log(chalk[color](`\n+-${spacer}-+\n| ${header} |\n+-${spacer}-+`));
 }
 
 // TODO: FIGURE OUT HOW TO WRAP TEXT IF IT OVERFLOWS WINDOW
-function printObject(obj, width, color) { 
+function printObject(obj, width, color) {
     Object.keys(obj).forEach((section) => {
-        let sectionSpacer = "";
-        let spacer = "";
-        let text = obj[section];
-        for (let i = 0; i < section.length; i++) {
-            spacer += " ";
-        }
-        for (let i = section.length; i < width; i++) {
-            sectionSpacer += " ";
-            spacer += " ";
-        }
-        for (let i = text.length; i < width; i++) {
-            text += " ";
-        }
-        console.log(`| ${spacer} |`);
-        console.log(`| ${chalk[color](section)}${sectionSpacer} |`);
-        console.log(`| ${text} |`);
-        console.log(`| ${spacer} |`);
+        const spacer = " ".repeat(width);
+        const sectionSpacer = " ".repeat(width - section.length);
+        const text = `${obj[section]}${" ".repeat(width - obj[section].length)}`;
+        console.log(`| ${spacer} |\n| ${chalk[color](section)}${sectionSpacer} |\n| ${text} |\n| ${spacer} |`);
     });
-    let closer = "";
-    for (let i = 0; i < width; i++) {
-        closer += "-";
-    }
+    const closer = "-".repeat(width);
     console.log(`+-${closer}-+`);
 }
 

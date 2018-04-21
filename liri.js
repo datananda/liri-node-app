@@ -37,18 +37,31 @@ function printHeader(headerText, width, color) {
     const spacer = "-".repeat(width);
     const header = `${headerText}${" ".repeat(width - headerText.length)}`;
     console.log(chalk[color](`\n+-${spacer}-+\n| ${header} |\n+-${spacer}-+`));
+    fs.appendFile("log.txt", `\n+-${spacer}-+\n| ${header} |\n+-${spacer}-+\n`, (error) => {
+        if (error) {
+            console.log(`Error occurred: ${error}`);
+        }
+    });
 }
 
 // TODO: FIGURE OUT HOW TO WRAP TEXT IF IT OVERFLOWS WINDOW
 function printObject(obj, width, color) {
+    let textToLog = "";
     Object.keys(obj).forEach((section) => {
         const spacer = " ".repeat(width);
         const sectionSpacer = " ".repeat(width - section.length);
         const text = `${obj[section]}${" ".repeat(width - obj[section].length)}`;
         console.log(`| ${spacer} |\n| ${chalk[color](section)}${sectionSpacer} |\n| ${text} |\n| ${spacer} |`);
+        textToLog += `| ${spacer} |\n| ${section}${sectionSpacer} |\n| ${text} |\n| ${spacer} |\n`;
     });
     const closer = "-".repeat(width);
     console.log(`+-${closer}-+`);
+    textToLog += `+-${closer}-+\n`;
+    fs.appendFile("log.txt", textToLog, (error) => {
+        if (error) {
+            console.log(`Error occurred: ${error}`);
+        }
+    });
 }
 
 function myTweets() {
@@ -142,13 +155,12 @@ function movieThis(movieName) {
             }
         });
     } else {
-        const movieRec = 'If you haven\'t watched "Mr. Nobody," then you should: http://www.imdb.com/title/tt0485947/';
-        printHeader("Movie This", movieRec.length, "yellow");
-        console.log("|                                                                                            |");
-        console.log('| If you haven\'t watched "Mr. Nobody," then you should: http://www.imdb.com/title/tt0485947/ |');
-        console.log("| It's on Netflix                                                                            |");
-        console.log("|                                                                                            |");
-        console.log("+--------------------------------------------------------------------------------------------+");
+        const movieRec = {
+            "Movie Recommendation": 'If you haven\'t watched "Mr. Nobody," then you should: http://www.imdb.com/title/tt0485947/',
+            Bonus: "It's on Netflix!",
+        };
+        printHeader("Movie This", getMaxLength(movieRec), "yellow");
+        printObject(movieRec, getMaxLength(movieRec), "yellow");
         console.log("");
     }
 }

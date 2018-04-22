@@ -7,7 +7,7 @@ LIRI is a language interpretation and recognition interface accessed via the com
 Install the required node packages:
 
 ```
-npm init
+npm install
 ```
 
 Provide your own .env file with Spotify and Twitter API keys:
@@ -42,11 +42,11 @@ You will be prompted to select one of the following options:
 
 ## Packages Used
 
-* [node-spotify-api](https://www.npmjs.com/package/node-spotify-api) - for calling the Spotify API
-* [twitter](https://www.npmjs.com/package/twitter) - for calling the Twitter API
-* [request](https://www.npmjs.com/package/request) - for making a request to the OMDB API
-* [fs](https://www.npmjs.com/package/fs) - for file I/O
 * [chalk](https://www.npmjs.com/package/chalk) - for pretty colors :)
-* [terminal-kit](https://www.npmjs.com/package/terminal-kit) - for getting the terminal size
+* [fs](https://nodejs.org/api/fs.html) - for file I/O
 * [inquirer](https://www.npmjs.com/package/inquirer) - for prompting the user with choices
 * [moment](https://www.npmjs.com/package/moment) - for formatting Twitter dates
+* [node-spotify-api](https://www.npmjs.com/package/node-spotify-api) - for calling the Spotify API
+* [request](https://www.npmjs.com/package/request) - for making a request to the OMDB API
+* [terminal-kit](https://www.npmjs.com/package/terminal-kit) - for getting the terminal size
+* [twitter](https://www.npmjs.com/package/twitter) - for calling the Twitter API

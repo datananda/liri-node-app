@@ -190,38 +190,60 @@ function doWhatItSays() {
     });
 }
 
-// RUN THE APP
-inquirer.prompt([
-    {
-        type: "list",
-        name: "selection",
-        message: "What do you want to do?",
-        choices: ["My Tweets", "Spotify This Song", "Movie This", "Do What It Says"],
-    },
-]).then((response) => {
-    if (response.selection === "Do What It Says") {
-        doWhatItSays();
-    } else if (response.selection === "My Tweets") {
-        myTweets();
-    } else if (response.selection === "Spotify This Song") {
-        inquirer.prompt([
-            {
-                type: "input",
-                name: "song",
-                message: "Enter a song name",
-            },
-        ]).then((songResponse) => {
-            spotifySong(songResponse.song);
-        });
-    } else if (response.selection === "Movie This") {
-        inquirer.prompt([
-            {
-                type: "input",
-                name: "movie",
-                message: "Enter a movie name",
-            },
-        ]).then((movieResponse) => {
-            movieThis(movieResponse.movie);
-        });
-    }
-});
+function runApp() {
+    console.log("");
+    inquirer.prompt([
+        {
+            type: "list",
+            name: "selection",
+            message: "What do you want to do?",
+            choices: ["My Tweets", "Spotify This Song", "Movie This", "Do What It Says"],
+        },
+    ]).then((response) => {
+        if (response.selection === "Do What It Says") {
+            doWhatItSays();
+        } else if (response.selection === "My Tweets") {
+            myTweets();
+        } else if (response.selection === "Spotify This Song") {
+            inquirer.prompt([
+                {
+                    type: "input",
+                    name: "song",
+                    message: "Enter a song name",
+                },
+            ]).then((songResponse) => {
+                spotifySong(songResponse.song);
+            });
+        } else if (response.selection === "Movie This") {
+            inquirer.prompt([
+                {
+                    type: "input",
+                    name: "movie",
+                    message: "Enter a movie name",
+                },
+            ]).then((movieResponse) => {
+                movieThis(movieResponse.movie);
+            });
+        }
+    });
+}
+
+// start LIRI
+function startApp() {
+    console.log("");
+    inquirer.prompt([
+        {
+            type: "confirm",
+            name: "confirm",
+            message: "Hello, my name is LIRI.\nFor the best experience, please maximize your console window.\nReady to start?",
+        },
+    ]).then((response) => {
+        if (response.confirm) {
+            runApp();
+        } else {
+            startApp();
+        }
+    });
+}
+
+startApp();
